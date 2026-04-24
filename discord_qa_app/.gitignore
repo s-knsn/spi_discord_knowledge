@@ -1,0 +1,32 @@
+# API Keys and Secrets (CRITICAL)
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+.venv/
+
+# Node & React
+node_modules/
+dist/
+build/
+.DS_Store
+*.local
+
+# Logs
+*.log
+extract_log.txt
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
