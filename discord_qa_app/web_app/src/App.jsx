@@ -2,36 +2,47 @@ import React, { useState, useMemo, useEffect } from 'react';
 import qaDataRaw from './data/qa_pairs.json';
 import './index.css';
 
-// 1. カテゴリの集計と「その他」への統合
-const categoryCounts = qaDataRaw.reduce((acc, qa) => {
-  const cat = qa.category || '未分類';
-  acc[cat] = (acc[cat] || 0) + 1;
-  return acc;
-}, {});
+// 1. 大カテゴリへのマッピング定義
+const categoryMappingRules = {
+  '📱 ツール・アカウント準備': ['ツール設定', 'アカウント運用', 'アカウント設定', 'アカウント戦略', 'アカウント設計', 'アカウント管理', '運用'],
+  '📢 集客・SNS運用': ['集客', 'SNS運用', '運用・集客', 'ブランディング', '運用ノウハウ', '運用フロー', 'コミュニティ', 'コミュニティ運営'],
+  '🔮 鑑定・顧客対応': ['鑑定手法', '顧客対応', 'トラブル対応', 'トラブルシューティング', '顧客管理', '鑑定倫理', 'コミュニケーション'],
+  '💰 販売・セールス': ['販売戦略', '販売', 'セールス', '販売・セールス', '営業', '営業戦略', '商品販売', '商品設計', '商品提供', '商品開発', '販売・決済', 'アップセル', '料金設定', '決済', '支払い'],
+  '🚀 戦略・マインド・経営': ['マネタイズ', 'ビジネスモデル', 'ビジネス', 'ビジネス運営', 'ビジネス戦略', '事業拡大', '事業戦略', '収益化', 'マインド', 'マインド・戦略', '業務効率化', 'オペレーション', '外注', '外注化', '外注・効率化', '効率化', 'AI活用', '運用戦略', '運用効率', '運用ルール', '法律・税務', '税務', '税務・法務', '戦略'],
+  '📦 その他': ['未分類', 'その他', 'デザイン', 'コンテンツ制作', 'ツール・リソース', '分析', 'コンテンツ作成', 'プラットフォーム活用']
+};
 
-const sortedRawCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
-
-const MIN_COUNT = 3; // 3件未満は「その他」に統合
 const categoryMap = {};
-const finalCategoryCounts = { 'その他': 0 };
-
-sortedRawCategories.forEach(([cat, count]) => {
-  if (cat === '未分類' || count < MIN_COUNT) {
-    categoryMap[cat] = 'その他';
-    finalCategoryCounts['その他'] += count;
-  } else {
-    categoryMap[cat] = cat;
-    finalCategoryCounts[cat] = count;
-  }
+Object.entries(categoryMappingRules).forEach(([mainCategory, subCategories]) => {
+  subCategories.forEach(sub => {
+    categoryMap[sub] = mainCategory;
+  });
 });
 
-const displayCategories = Object.entries(finalCategoryCounts)
-  .filter(([cat, count]) => count > 0)
-  .sort((a, b) => {
-    if (a[0] === 'その他') return 1; // その他は最後に
-    if (b[0] === 'その他') return -1;
-    return b[1] - a[1];
-  });
+const finalCategoryCounts = {
+  '📱 ツール・アカウント準備': 0,
+  '📢 集客・SNS運用': 0,
+  '🔮 鑑定・顧客対応': 0,
+  '💰 販売・セールス': 0,
+  '🚀 戦略・マインド・経営': 0,
+  '📦 その他': 0
+};
+
+qaDataRaw.forEach(qa => {
+  const cat = qa.category || '未分類';
+  const mainCat = categoryMap[cat] || '📦 その他';
+  finalCategoryCounts[mainCat] = (finalCategoryCounts[mainCat] || 0) + 1;
+});
+
+// プロセス順に固定して表示するための配列
+const displayCategories = [
+  '📱 ツール・アカウント準備',
+  '📢 集客・SNS運用',
+  '🔮 鑑定・顧客対応',
+  '💰 販売・セールス',
+  '🚀 戦略・マインド・経営',
+  '📦 その他'
+].map(cat => [cat, finalCategoryCounts[cat]]).filter(([cat, count]) => count > 0);
 
 // 2. 人気タグの集計
 const tagCounts = qaDataRaw.reduce((acc, qa) => {
