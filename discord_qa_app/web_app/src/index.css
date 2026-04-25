@@ -303,4 +303,23 @@ body {
   /* カード内のパディングをスマホ向けに少し狭める */
   .qa-card { padding: 1.2rem; }
   .qa-clean-block { padding-left: 0.5rem; gap: 1rem; }
+
+  /* Q/Aブロック: アイコンの下にテキストを配置 */
+  .clean-item {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .clean-item p {
+    padding-top: 0;
+    font-size: 1rem;
+  }
+
+  /* ログブロック: ユーザーアイコンの下にテキストを配置 */
+  .qa-block {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .qa-divider {
+    margin-left: 0;
+  }
 }
