@@ -272,3 +272,35 @@ body {
   gap: 12px;
   flex-wrap: wrap;
 }
+
+/* --- スマホ向けUI微調整 --- */
+@media (max-width: 600px) {
+  /* タイトルの改行やサイズ調整 */
+  .header { padding: 3rem 1rem 2rem; }
+  .header h1 { 
+    font-size: 1.8rem; 
+    word-break: keep-all; /* 不自然な改行を防ぐ */
+    line-height: 1.4;
+  }
+  
+  /* 検索バーとタグ */
+  .controls { margin-bottom: 1rem; }
+  .popular-tags-container { gap: 8px; margin-top: 12px; }
+  .tag-filter-btn { padding: 5px 10px; font-size: 0.8rem; }
+  
+  /* フィルターのドロップダウン群を綺麗に並べる */
+  .filter-options-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .control-select, .fav-filter-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* カード内のパディングをスマホ向けに少し狭める */
+  .qa-card { padding: 1.2rem; }
+  .qa-clean-block { padding-left: 0.5rem; gap: 1rem; }
+}
