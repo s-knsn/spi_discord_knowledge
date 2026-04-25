@@ -88,6 +88,35 @@ body {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
+  padding: 1.2rem;
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+}
+
+.clean-item.question {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.clean-item.question p {
+  color: var(--text-muted); /* 質問は少しトーンを落とす */
+}
+
+.clean-item.answer {
+  background: rgba(155, 81, 224, 0.08); /* プライマリーカラーの極薄グラデーション風 */
+  border: 1px solid rgba(155, 81, 224, 0.2);
+}
+.clean-item.answer p {
+  color: var(--text-main); /* 回答は目立たせる */
+}
+
+/* 検索キーワードハイライト用 */
+.highlight {
+  background-color: rgba(212, 175, 55, 0.4); /* Secondary color (gold) background */
+  color: #fff;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
 .clean-icon {
@@ -134,14 +163,23 @@ body {
 }
 
 .raw-thread-details summary {
-  padding: 1rem;
+  padding: 1rem 1.2rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: var(--text-main);
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid transparent;
   outline: none;
   list-style: none; /* Hide default arrow in some browsers */
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.raw-thread-details[open] summary {
+  border-bottom-color: var(--border);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .raw-thread-details summary::-webkit-details-marker {
@@ -149,8 +187,9 @@ body {
 }
 
 .raw-thread-details summary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+  padding-left: 1.5rem; /* ホバー時に少し右に動くエフェクト */
+  color: #fff;
 }
 
 .qa-body {

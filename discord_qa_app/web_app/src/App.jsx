@@ -56,6 +56,39 @@ const popularTags = Object.entries(tagCounts)
   .slice(0, 8) // 上位8件を表示
   .map(t => t[0]);
 
+// 3. テキスト自動整形＆ハイライト用ヘルパー関数
+const formatAndHighlightText = (text, highlightKeyword) => {
+  if (!text) return null;
+  
+  // 自動整形（句点での改行、箇条書きの改行）
+  let formattedText = text
+    .replace(/([①-⑳1-9１-９][.．、])/g, '\n$1') // 数字の箇条書き
+    .replace(/([^ \n])([・])/g, '$1\n$2') // 「・」の箇条書き
+    .replace(/。(?![」\]）\n])/g, '。\n\n'); // 句点の後に改行（閉じ括弧の前などは除外）
+
+  // 連続する改行を2つに制限
+  formattedText = formattedText.replace(/\n{3,}/g, '\n\n').trim();
+
+  // ハイライトキーワードがない場合
+  if (!highlightKeyword || highlightKeyword.trim() === '') {
+    return <span style={{ whiteSpace: 'pre-wrap' }}>{formattedText}</span>;
+  }
+
+  // キーワードがある場合、大文字小文字を区別せずに分割してハイライト
+  const escapedKeyword = highlightKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+  const parts = formattedText.split(regex);
+
+  return (
+    <span style={{ whiteSpace: 'pre-wrap' }}>
+      {parts.map((part, i) => 
+        regex.test(part) ? <span key={i} className="highlight">{part}</span> : part
+      )}
+    </span>
+  );
+};
+
+
 
 function App() {
   const [qaData] = useState(qaDataRaw);
@@ -243,11 +276,11 @@ function App() {
                     <div className="qa-clean-block">
                       <div className="clean-item question">
                         <div className="clean-icon q-icon">Q</div>
-                        <p>{qa.clean_qa.question}</p>
+                        <p>{formatAndHighlightText(qa.clean_qa.question, searchTerm)}</p>
                       </div>
                       <div className="clean-item answer">
                         <div className="clean-icon a-icon">A</div>
-                        <p>{qa.clean_qa.answer}</p>
+                        <p>{formatAndHighlightText(qa.clean_qa.answer, searchTerm)}</p>
                       </div>
                     </div>
                   )}
@@ -268,7 +301,7 @@ function App() {
                                   <span className="speaker-name">
                                     {message.speaker}
                                   </span>
-                                  <p>{message.text}</p>
+                                  <p>{formatAndHighlightText(message.text, searchTerm)}</p>
                                 </div>
                               </div>
                             </React.Fragment>
