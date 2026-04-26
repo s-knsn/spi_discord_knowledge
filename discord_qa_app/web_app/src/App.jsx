@@ -97,6 +97,42 @@ function App() {
   const [selectedTag, setSelectedTag] = useState('');
   const [sortOrder, setSortOrder] = useState('newest'); // 'newest' | 'oldest'
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [anyLogOpen, setAnyLogOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // トップへ戻るボタンの表示制御
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 個別ログの開閉時に状態をチェック
+  const handleLogToggle = () => {
+    // onToggle発火直後はDOMが更新されているので判定可能
+    const openDetails = document.querySelectorAll('.raw-thread-details[open]');
+    setAnyLogOpen(openDetails.length > 0);
+  };
+
+  // ログの一括開閉制御
+  const toggleAllLogs = () => {
+    const shouldOpenAll = !anyLogOpen; // 1つでも開いていたら「すべて閉じる」、0なら「すべて開く」
+    const details = document.querySelectorAll('.raw-thread-details');
+    details.forEach(d => {
+      if (shouldOpenAll) {
+        d.setAttribute('open', '');
+      } else {
+        d.removeAttribute('open');
+      }
+    });
+    setAnyLogOpen(shouldOpenAll);
+  };
 
   // お気に入り状態の管理 (localStorage)
   const [favorites, setFavorites] = useState(() => {
@@ -239,6 +275,14 @@ function App() {
             >
               {showFavoritesOnly ? '★ お気に入りのみ表示中' : '☆ お気に入り絞り込み'}
             </button>
+
+            <button 
+              className="fav-filter-btn toggle-logs-btn"
+              onClick={toggleAllLogs}
+              title={anyLogOpen ? 'すべてのログを閉じる' : 'すべてのログを開く'}
+            >
+              {anyLogOpen ? '▲ ログをすべて閉じる' : '▼ ログをすべて開く'}
+            </button>
           </div>
         </section>
 
@@ -286,7 +330,7 @@ function App() {
                   )}
                   
                   {qa.raw_thread && qa.raw_thread.length > 0 && (
-                    <details className="raw-thread-details">
+                    <details className="raw-thread-details" onToggle={handleLogToggle}>
                       <summary>▶ 実際のやり取りのログを見る (Raw Chat)</summary>
                       <div className="qa-body">
                         {qa.raw_thread.map((message, mIdx) => {
@@ -321,6 +365,15 @@ function App() {
           )}
         </section>
       </main>
+
+      {/* トップへ戻るフローティングボタン */}
+      <button 
+        className={`scroll-to-top-btn ${showScrollTop ? 'visible' : ''}`}
+        onClick={scrollToTop}
+        title="一番上に戻る"
+      >
+        ↑
+      </button>
     </div>
   );
 }
